@@ -1,0 +1,54 @@
+#!/bin/sh
+
+if [ $(id -u) -ne 0 ]; then
+	echo "run as root"
+	exit 1
+fi
+
+set -ex
+
+basedir=$(pwd)
+mkdir -p images
+if [ ! -e images/centos.tar.xz ]; then
+    cd images
+    wget http://images.linuxcontainers.org/images/centos/6/amd64/default/20141003_02:16/rootfs.tar.xz
+    mv rootfs.tar.xz centos.tar.xz
+    cd ..
+fi
+
+if [ ! -d centos ]; then
+    mkdir -p centos
+    cd centos
+    tar Jxf ../images/centos.tar.xz
+    cd ..
+fi
+
+if [ ! -e images/ubuntu.tar.xz ]; then
+    cd images
+    wget http://images.linuxcontainers.org/images/ubuntu/trusty/amd64/default/20141003_03:49/rootfs.tar.xz
+    mv rootfs.tar.xz ubuntu.tar.xz
+    cd ..
+fi
+
+if [ ! -d ubuntu ]; then
+    mkdir -p ubuntu
+    cd ubuntu
+    tar Jxf ../images/ubuntu.tar.xz
+    cd ..
+fi
+
+cd $basedir
+
+if [ ! -e chrootbreak ]; then
+    wget http://people.canonical.com/~serge/chrootbreak.c
+    wget http://people.canonical.com/~serge/chrootbreak
+    chmod ugo+x chrootbreak
+fi
+
+touch MARKER
+cp chrootbreak ubuntu/
+cp chrootbreak centos/
+
+for D in ubuntu centos; do
+    unshare -m $basedir/cis.chroottest $basedir $D
+done

@@ -1,0 +1,14 @@
+#!/bin/sh
+
+set -ex
+
+basedir=$1
+ddir=$basedir/$2
+
+mount --bind /mnt /mnt
+mount --make-slave /mnt
+mount -t tmpfs tmpfs /mnt
+mkdir /mnt/root
+mount --rbind / /mnt/root
+mount --make-rslave /mnt
+chroot /mnt/root $basedir/cis.pivottest $1 $2
