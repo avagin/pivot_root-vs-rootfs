@@ -46,9 +46,10 @@ if [ ! -e chrootbreak ]; then
 fi
 
 touch MARKER
-cp chrootbreak ubuntu/
-cp chrootbreak centos/
+gcc -Wall chrootbreak2.c -o chrootbreak2
+cp chrootbreak2 ubuntu/
+#cp chrootbreak2 centos/
 
-for D in ubuntu centos; do
+for D in ubuntu; do
     unshare -m $basedir/cis.chroottest $basedir $D
 done

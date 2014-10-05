@@ -12,7 +12,7 @@ cd /
 # chroot /   # manpage says this is sometimes necessary - but it doesn't help
 mount -t proc proc /proc
 umount -l mnt
-if /chrootbreak /usr/bin/stat $basedir/MARKER; then
+if /chrootbreak2 /usr/bin/stat $basedir/MARKER; then
     echo "TEST BAD for $ddir"
 else
     echo "TEST GOOD for $ddir"
